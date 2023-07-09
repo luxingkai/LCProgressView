@@ -2,7 +2,7 @@
 //  ViewController.h
 //  LCProgessView
 //
-//  Created by 陆兴凯 on 2023/7/5.
+//  Created by tigerfly on 2023/7/5.
 //
 
 #import <UIKit/UIKit.h>
