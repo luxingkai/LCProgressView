@@ -105,7 +105,7 @@ typedef void(^renderPercent)(NSString *progress);
 
 /**
  初始化时动画的贝塞尔曲线
- 默认值为 [0.34, 0.69, 0.1, 1]
+ 默认值为 [0.34, 0.69, 1]
  */
 @property (nonatomic, copy) NSArray *mountedBezier;
 

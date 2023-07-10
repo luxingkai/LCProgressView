@@ -50,6 +50,7 @@
 - (instancetype)initWithStyle:(LCProgressViewStyle)style {
     if (self = [super initWithFrame:CGRectZero]) {
         [self configureInnerDefaultValue];
+        self.style = style;
         [self setupSubviews];
     }
     return self;
@@ -66,13 +67,14 @@
     self.step = 1;
     self.filleted = YES;
     self.mountedTransition = YES;
-    self.mountedBezier = @[@0.34, @0.69, @0.1, @1];
+    self.mountedBezier = @[@0.34, @0.69, @1];
     self.fontSize = 10;
     self.progressColor = UIColor.greenColor;
     self.trackColor = UIColor.redColor;
 }
 
 - (void)setupSubviews {
+    if (self.style == LCProgressViewStyleCircle) return;
     
     self.progressView = [[UIView alloc] initWithFrame:CGRectZero];
     self.progressView.backgroundColor = self.progressColor;
@@ -186,20 +188,39 @@
 - (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
     if (CGRectEqualToRect(rect, CGRectZero)) return;
+    if (self.style == LCProgressViewStyleStraight) return;
     
     CGMutablePathRef progressPathRef = CGPathCreateMutable();
     CGPathAddRelativeArc(progressPathRef, NULL, CGRectGetWidth(rect)/2.0, CGRectGetHeight(rect)/2.0, CGRectGetWidth(rect)/2.0, 0, M_PI * 2);
     CAShapeLayer *progressLayer = [CAShapeLayer layer];
+    progressLayer.frame = CGRectMake(0, 0, CGRectGetWidth(rect), CGRectGetWidth(rect));
     progressLayer.path = progressPathRef;
-    [progressLayer setFillColor:self.progressColor.CGColor];
+    [progressLayer setStrokeColor:self.progressColor.CGColor];
+    [progressLayer setLineWidth:6];
+    [progressLayer setFillColor:UIColor.clearColor.CGColor];
     [self.layer addSublayer:progressLayer];
     
-    CGMutablePathRef trackPathRef = CGPathCreateMutable();
-    CGPathAddRelativeArc(trackPathRef, NULL, CGRectGetWidth(rect)/2.0, CGRectGetHeight(rect)/2.0, CGRectGetWidth(rect)/2.0, 0, M_PI * 2 * self.percentage);
-    CAShapeLayer *progressTrackLayer = [CAShapeLayer layer];
-    progressTrackLayer.path = trackPathRef;
-    [progressTrackLayer setFillColor:self.trackColor.CGColor];
-    [self.layer addSublayer:progressTrackLayer];
+    
+    CGMutablePathRef trackProgressPathRef = CGPathCreateMutable();
+    CGPathAddRelativeArc(trackProgressPathRef, NULL, CGRectGetWidth(rect)/2.0, CGRectGetHeight(rect)/2.0, CGRectGetWidth(rect)/2.0, 0, M_PI * 2);
+    CAShapeLayer *trackProgressLayer = [CAShapeLayer layer];
+    trackProgressLayer.frame = CGRectMake(0, 0, CGRectGetWidth(rect), CGRectGetWidth(rect));
+    trackProgressLayer.path = trackProgressPathRef;
+    [trackProgressLayer setStrokeColor:self.trackColor.CGColor];
+    [trackProgressLayer setLineWidth:8];
+    [trackProgressLayer setStrokeStart:0];
+    [trackProgressLayer setStrokeEnd:0.8];
+    [trackProgressLayer setLineCap:kCALineCapRound];
+    [trackProgressLayer setFillColor:UIColor.clearColor.CGColor];
+    [self.layer addSublayer:trackProgressLayer];
+    
+    CAKeyframeAnimation *keyFrameAnimation = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
+    [keyFrameAnimation setKeyTimes:self.mountedBezier];
+    keyFrameAnimation.calculationMode = kCAAnimationCubic;
+    keyFrameAnimation.removedOnCompletion = NO;
+    keyFrameAnimation.fillMode = kCAFillModeForwards;
+    keyFrameAnimation.duration = 2;
+    [trackProgressLayer addAnimation:keyFrameAnimation forKey:@"strokeEnd"];
 }
 
 #pragma mark -- setter
@@ -289,7 +310,8 @@
     return [NSString stringWithFormat:@"%.lf%@",self.percentage * 100, @"%"];
 }
 
-
+//- (nullable __kindof CALayer *)hitTest:(CGPoint)p {
+//}
 
 
 @end

@@ -24,14 +24,14 @@
 //    progressView.progress = 0.4;
 //    [self.view addSubview:progressView];
     
-    LCProgressView *progressView = [[LCProgressView alloc] initWithStyle:LCProgressViewStyleStraight];
-    progressView.frame = CGRectMake(80, 200, 200, 100);
+    LCProgressView *progressView = [[LCProgressView alloc] initWithStyle:LCProgressViewStyleCircle];
+    progressView.frame = CGRectMake(80, 200, 280, 100);
     progressView.progressColor = UIColor.yellowColor;
     progressView.trackColor = UIColor.greenColor;
     progressView.percentage = 0.4;
     progressView.filleted = YES;
     progressView.mountedTransition = NO;
-    progressView.disPlayStyle = LCProgressViewsDisplayStyleCenter;
+    progressView.disPlayStyle = LCProgressViewsDisplayStyleFollow;
     progressView.disabled = NO;
     progressView.progressStroke = 12;
     progressView.trackStroke = 8;
